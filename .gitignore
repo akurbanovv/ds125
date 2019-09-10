@@ -1,0 +1,7 @@
+6-0001-fall-2016/
+6-0002-fall-2016/
+Slides/
+testings/
+*.zip 
+*.pdf
+__pycache__/
