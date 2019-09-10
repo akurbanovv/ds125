@@ -201,8 +201,9 @@ def match_with_gaps(my_word, other_word):
         _ , and my_word and other_word are of the same length;
         False otherwise: 
     '''
+    print(len(my_word))
+    print(len(other_word))
     
-
 
 
     pass
@@ -265,6 +266,9 @@ def hangman_with_hints(secret_word):
 if __name__ == "__main__":
     secret_word = choose_word(wordlist)
     # ecret_word = 'movie'
+    my_word = 'te_ t'
+    other_word = 'tact'
+    match_with_gaps(my_word, other_word)
     hangman(secret_word)
  
 ###############
