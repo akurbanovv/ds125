@@ -214,7 +214,7 @@ def match_with_gaps(my_word, other_word):
         if my_word[i] != other_word[i]:
           return False
     
-    # checking if the amount of a letter in each word is equal or not
+    # checking if the amount of each letter in each word is equal or not
     for letter in my_word:
       if letter != '_':
         if my_word.count(letter) != other_word.count(letter):
@@ -231,10 +231,18 @@ def show_possible_matches(my_word):
              at which that letter occurs in the secret word are revealed.
              Therefore, the hidden letter(_ ) cannot be one of the letters in the word
              that has already been revealed.
-
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+    matches = []
+    matched = False
+    for word in wordlist:
+      if match_with_gaps(my_word, word):
+        matches.append(word)
+        matched = True
+
+    if matched: print(*matches, sep=" ")
+    else: print("No matches found")
+    
+
 
 
 
@@ -278,10 +286,9 @@ def hangman_with_hints(secret_word):
 
 if __name__ == "__main__":
     secret_word = choose_word(wordlist)
-    # ecret_word = 'movie'
-    my_word = 'bus_ n_ ss'
-    other_word = 'business'
-    print(match_with_gaps(my_word, other_word))
+    # secret_word = 'movie'
+    # print(match_with_gaps(my_word, other_word))
+    
     # hangman(secret_word)
 
 ###############
