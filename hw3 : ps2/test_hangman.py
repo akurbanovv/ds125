@@ -1,104 +1,131 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Sep  6 11:06:54 2019
+
+@author: DataScience 125
+"""
+
 from hangman import *
 
-# Problem Set 3, test_hangman.py
-# Name: Akhmadjon Kurbanov
-# Collaborators:
-# Time spent:
+def test_is_word_guessed():
 
-def test_is_word_guessed(): 
-    print('Testing is_word_guessed\n')
+    Passed = True
 
-    # test 1 - with one letter not in guessed letters  
-    secret_word = 'table'
-    letters_guessed = ['t', 'a', 'o', 'l', 'e', 's']
+    testCases = [
+        ['m',           ['m'],                          True],
+        ['m',           ['m', 'a', 'd'],                True],
+        ['it',          ['i', 't'],                     True],
+        ['it',          ['i', 't', 'k', 'f'],           True],
+        ['apple',       ['a', 'p', 'l', 's'],           False],
+        ['apple',       ['a', 'p', 'l', 'e'],           True],
+        ['awkward',     ['a', 'w', 'k', 'r', 'd'],      True],
+        ['banjo',       ['b', 'a', 'n', 'j', 'o'],      True],
+        ['banjo',       ['b', 'a', 'k', 'p', 'r', 's'], False],
+        ['fishhook',    ['f', 'i', 'h', 'k', 's'],      False],
+        ['zzzz',        ['z', 'i'],                     True],
+        ['zzzz',        ['z'],                          True],
+        ['zzzz',        ['i'],                          False],
+        ['zzzz',        ['d', 'i'],                     False],
+    ]
 
-    if is_word_guessed(secret_word, letters_guessed):
-        print('FAILURE: is_word_guessed() with one letter not in guessed letters')
-        print('\t Expected "False", but got ' + is_word_guessed(secret_word, letters_guessed))
-    else: print('SUCCESS: is_word_guessed() with one letter not in guessed letters')
-    
-    # test 2 - with few letters not in guessed letters
-    secret_word = 'horse'
-    letters_guessed = ['a', 'v', 'o', 'l', 'e', 's']
+    for case in testCases:
+        secret_word = case[0]
+        letters_guessed = case[1]
+        expected_result = case[2]
 
-    if is_word_guessed(secret_word, letters_guessed):
-        print('FAILURE: is_word_guessed() with few letters not in guessed letters')
-        print('\t Expected "False", but got ' + is_word_guessed(secret_word, letters_guessed))
-    else: print('SUCCESS: is_word_guessed() with few letters not in guessed letters')
+        result = is_word_guessed(secret_word, letters_guessed)
 
-    # test 3 - with all letters not in guessed letters
-    secret_word = 'horse'
-    letters_guessed = ['g', 'q', 'a', 'j', 'i', 'z']
+        if result != expected_result:
+            print("FAILURE: is_word_guessed()")
+            print("\tExpected", str(expected_result) + ", but got", str(result),
+                  "for secret_word: '" + secret_word + "' and letters_guessed:", letters_guessed)
+            Passed = False
 
-    if is_word_guessed(secret_word, letters_guessed):
-        print('FAILURE: is_word_guessed() with all letters not in guessed letters')
-        print('\t Expected "False", but got ' + is_word_guessed(secret_word, letters_guessed))
-    else: print('SUCCESS: is_word_guessed() with all letters not in guessed letters')
+    if Passed:
+        print("SUCCESS: is_word_guessed()")
 
 def test_get_guessed_word():
-    print('Testing get_guessed_word()\n')
-    
-    # test 1 - when all letters are guessed 
-    secret_word = 'house' 
-    letters_guessed = ['h', 'u', 'o', 'l', 'e', 's']
-    guessed_word = get_guessed_word(secret_word, letters_guessed)
-    
-    if guessed_word != 'house':
-        print('FAILURE: test_get_guessed_word() with all letters guessed')
-        print('\t Expected "house", but got ' + guessed_word)
-    else: print('SUCCESS: test_get_guessed_word() with all letters guessed')
 
-    # test 2 - when only few letters are guessed
-    secret_word = 'apple'
-    letters_guessed = ['e', 'i', 'k', 'p', 'r', 's']
-    guessed_word = get_guessed_word(secret_word, letters_guessed)
+    Passed = True
 
-    if guessed_word != '_ pp_ e':
-        print('FAILURE: test_get_guessed_word() with few letters guessed')
-        print('\t Expected "_ pp_ e", but got ' + guessed_word)
-    else: print('SUCCESS: test_get_guessed_word() with few letters guessed')
-    
-    # test 3 - when no letters are guessed
-    secret_word = 'laptop' 
-    letters_guessed = ['f', 'i', 'v', 'g', 'j', 'q']
-    guessed_word = get_guessed_word(secret_word, letters_guessed)
-    
-    if guessed_word != '_ _ _ _ _ _ ':
-        print('FAILURE: test_get_guessed_word() with no letters guessed')
-        print('\t Expected "_ _ _ _ _ _ ", but got ' + guessed_word)
-    else: print('SUCCESS: test_get_guessed_word() with all letters guessed')
+    testCases = [
+        ['apple',           ['g'],                          '_ _ _ _ _ '],
+        ['apple',           ['a'],                          'a_ _ _ _ '],
+        ['apple',           ['a', 'p'],                     'app_ _ '],
+        ['apple',           ['a', 'p', 'l'],                'appl_ '],
+        ['apple',           ['a', 'p', 'l', 'e'],           'apple'],
+        ['apple',           ['e', 'i', 'k', 'p', 'r', 's'], '_ pp_ e'],
+        ['hood',            ['o'],                          '_ oo_ '],
+        ['hood',            ['o', 'a', 'g'],                '_ oo_ '],
+        ['hood',            ['o', 'a', 'd'],                '_ ood'],
+        ['hood',            ['o', 'a', 'd','g', 'h'],       'hood'],
+        ['tests',           [],       '_ _ _ _ _ '],
+        ['tests',           ['t'],       't_ _ t_ '],
+        ['tests',           ['t', 's'],       't_ sts'],
+        ['moon',            ['n', 'm'],       'm_ _ n']
+    ]
+
+    for case in testCases:
+        secret_word = case[0]
+        letters_guessed = case[1]
+        expected_result = case[2]
+
+        result = get_guessed_word(secret_word, letters_guessed)
+
+        if result != expected_result:
+            print("FAILURE: is_word_guessed()")
+            print("\tExpected", str(expected_result) + ", but got", str(result),
+                  "for secret_word: '" + secret_word + "' and letters_guessed:", letters_guessed)
+            Passed = False
+
+    if Passed:
+        print("SUCCESS: get_guessed_word()")
 
 def test_get_available_letters():
-    print('Testing test_get_available_letters()\n')
 
-    # test 1 with some letters guessed
-    letters_guessed = ['e', 'i', 'k', 'p', 'r', 's']
-    if get_available_letters(letters_guessed) != 'abcdfghjlmnoqtuvwxyz':
-        print('FAILURE: test_get_available_letters() with some letters guessed')
-    else: print('SUCCESS: test_get_available_letters() with some letters guessed')
+    Passed = True
 
-    # test 2 with no letters guessed
-    letters_guessed = []
-    if get_available_letters(letters_guessed) != 'abcdefghijklmnopqrstuvwxyz':
-        print('FAILURE: test_get_available_letters() with no letters guessed')
-    else: print('SUCCESS: test_get_available_letters() with no letters guessed')
+    testCases = [
+        [[], 'abcdefghijklmnopqrstuvwxyz'],
+        [['a','b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'], ''],
+        [['b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'], 'a'],
+        [['b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y'], 'az'],
+        [['b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y'], 'amz'],
+        [['a'], 'bcdefghijklmnopqrstuvwxyz'],
+        [['z'], 'abcdefghijklmnopqrstuvwxy'],
+        [['h', 'q'], 'abcdefgijklmnoprstuvwxyz'],
+        [['a', 'm', 'n', 'z'], 'bcdefghijklopqrstuvwxy'],
+        [['a', 'm', 'n', 'z', 'o'], 'bcdefghijklpqrstuvwxy'],
+        [['e', 'i', 'k', 'p', 'r', 's'], 'abcdfghjlmnoqtuvwxyz'],
+        [['c', 'b', 'a'], 'defghijklmnopqrstuvwxyz'], #out of order available letters
+        [['a', 'b', 'a'], 'cdefghijklmnopqrstuvwxyz'] #repeated letters
+    ]
 
-    # test 3 with numbers in letter guessed
-    letters_guessed = ['b', 'd', 'z', 's', 'v', '9', 'g']
-    if get_available_letters(letters_guessed) != 'acefhijklmnopqrtuwxy':
-        print('FAILURE: test_get_available_letters() with a number in letter guessed')
-    else: print('SUCCESS: test_get_available_letters() with a number in letter guessed')
+    for case in testCases:
+        letters_guessed = case[0]
+        expected_result = case[1]
+
+        result = get_available_letters(letters_guessed)
+
+        if result != expected_result:
+            print("FAILURE: is_word_guessed()")
+            print("\tExpected", str(expected_result) + ", but got", str(result),
+                  "with letters_guessed:", letters_guessed)
+            Passed = False
+
+    if Passed:
+        print("SUCCESS: get_available_letters()")
 
 
-if __name__ == "__main__":
-    print("----------------------------------------------------------------------")
-    test_get_guessed_word()
-    print("----------------------------------------------------------------------")
-    test_is_word_guessed()
-    print("----------------------------------------------------------------------")
-    test_get_available_letters()
-    print("----------------------------------------------------------------------")
 
-
-
-    
+print("----------------------------------------------------------------------")
+print("Testing is_word_guessed...")
+test_is_word_guessed()
+print("----------------------------------------------------------------------")
+print("Testing get_guessed_word...")
+test_get_guessed_word()
+print("----------------------------------------------------------------------")
+print("Testing get_available_letters...")
+test_get_available_letters()
+print("----------------------------------------------------------------------")

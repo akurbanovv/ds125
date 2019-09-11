@@ -5,15 +5,13 @@
 
 # Hangman Game
 # -----------------------------------
-# Helper code
-# You don't need to understand this helper code,
-# but you will have to know how to use the functions
-# (so be sure to read the docstrings!)
+
 import random
 import string
 
 WORDLIST_FILENAME = "words.txt"
 
+# Helper code
 
 def load_words():
     """
@@ -44,8 +42,7 @@ def choose_word(wordlist):
 
 # -----------------------------------
 
-# Load the list of words into the variable wordlist
-# so that it can be accessed from anywhere in the program
+
 wordlist = load_words()
 
 
@@ -100,7 +97,6 @@ def get_available_letters(letters_guessed):
     return letters_not_guessed
     
     
-
 def hangman(secret_word):
     len_word = len(secret_word)
     guesses_remaining = 6
@@ -187,6 +183,7 @@ def hangman(secret_word):
 # -----------------------------------
 
 
+
 def match_with_gaps(my_word, other_word):
     '''
     my_word: string with _ characters, current guess of secret word
@@ -236,7 +233,6 @@ def show_possible_matches(my_word):
     if matched: print(*matches, sep=" ")
     else: print("No matches found")
     
-
 
 def hangman_with_hints(secret_word):
     '''
@@ -328,10 +324,12 @@ def hangman_with_hints(secret_word):
       print("Sorry, you ran out of guesses. The word was " + secret_word + ".")
     
 
-# my personal modification
+
+# -----------------------------------
+
+
 
 def show_hangman_pic(guesses):
-
     hangman = (
     """
     -----
@@ -417,7 +415,6 @@ def show_hangman_pic(guesses):
     |
     --------
     """)
-
     print(hangman[guesses])
 
 def my_hangman(secret_word):
