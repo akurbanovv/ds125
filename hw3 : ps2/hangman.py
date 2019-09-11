@@ -201,13 +201,26 @@ def match_with_gaps(my_word, other_word):
         _ , and my_word and other_word are of the same length;
         False otherwise: 
     '''
-    print(len(my_word))
-    print(len(other_word))
+    # deleting the space after each underscore
+    my_word = my_word.replace(' ', '')
     
-
-
-    pass
-
+    # checking length of each word
+    if len(my_word) != len(other_word):
+      return False
+    
+    # checking if each letter is equal to corresponding letter in each word
+    for i in range(len(my_word)):
+      if my_word[i] != '_':
+        if my_word[i] != other_word[i]:
+          return False
+    
+    # checking if the amount of a letter in each word is equal or not
+    for letter in my_word:
+      if letter != '_':
+        if my_word.count(letter) != other_word.count(letter):
+          return False
+    
+    return True
 
 
 def show_possible_matches(my_word):
@@ -266,11 +279,11 @@ def hangman_with_hints(secret_word):
 if __name__ == "__main__":
     secret_word = choose_word(wordlist)
     # ecret_word = 'movie'
-    my_word = 'te_ t'
-    other_word = 'tact'
-    match_with_gaps(my_word, other_word)
-    hangman(secret_word)
- 
+    my_word = 'bus_ n_ ss'
+    other_word = 'business'
+    print(match_with_gaps(my_word, other_word))
+    # hangman(secret_word)
+
 ###############
     
     # To test part 3 re-comment out the above lines and 
