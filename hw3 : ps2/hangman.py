@@ -4,6 +4,14 @@
 # Time spent: 8 hours
 
 # Hangman Game
+# Hangman implements a user-compuer interaction game. I spent 
+# sufficient time testing each function and passed all my own 
+# test cases and ones which were collaboratively developed by 
+# the whole class. I created total of 12 test-cases for different 
+# parts of this assignment; they all can be found in test_hangman.py
+# I also developed my own version of the hangman, which is called
+# my_hangman and can be found below. To play my version of hangman
+# you have to two lines of the code in the main method. 
 # -----------------------------------
 
 import random
@@ -30,6 +38,8 @@ def load_words():
     # print("  ", len(wordlist), "words loaded.")
     return wordlist
 
+
+
 def choose_word(wordlist):
     """
     wordlist (list): list of words (strings)
@@ -42,8 +52,10 @@ def choose_word(wordlist):
 
 # -----------------------------------
 
-
+# Load the list of words into the variable wordlist
+# so that it can be accessed from anywhere in the program
 wordlist = load_words()
+
 
 
 def is_word_guessed(secret_word, letters_guessed):
@@ -60,6 +72,8 @@ def is_word_guessed(secret_word, letters_guessed):
       if letter not in letters_guessed:
         return False
     return True
+
+
 
 def get_guessed_word(secret_word, letters_guessed):
     '''
@@ -81,6 +95,8 @@ def get_guessed_word(secret_word, letters_guessed):
     guessed_word_to_string = ''.join(guessed_word)
     return guessed_word_to_string
 
+
+
 def get_available_letters(letters_guessed):
     '''
     letters_guessed: list (of letters), which letters have been guessed so far
@@ -95,6 +111,7 @@ def get_available_letters(letters_guessed):
         letters_not_guessed = letters_not_guessed.replace(letter, '')
 
     return letters_not_guessed
+  
     
     
 def hangman(secret_word):
@@ -214,6 +231,8 @@ def match_with_gaps(my_word, other_word):
     
     return True
 
+
+
 def show_possible_matches(my_word):
     '''
     my_word: string with _ characters, current guess of secret word
@@ -233,6 +252,7 @@ def show_possible_matches(my_word):
     if matched: print(*matches, sep=" ")
     else: print("No matches found")
     
+
 
 def hangman_with_hints(secret_word):
     '''
@@ -417,6 +437,8 @@ def show_hangman_pic(guesses):
     """)
     print(hangman[guesses])
 
+
+
 def my_hangman(secret_word):
     '''
     secret_word: string, the secret word to guess.
@@ -511,6 +533,8 @@ def my_hangman(secret_word):
       print("Your total score for this game is: " + str(total_score))
     else: 
       print("Sorry, you ran out of guesses. The word was " + secret_word + ".")
+
+
 
 if __name__ == "__main__":
     # secret_word = choose_word(wordlist)

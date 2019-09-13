@@ -66,7 +66,7 @@ def test_get_guessed_word():
     if guessed_word != '_ _ _ _ _ _ ':
         print('FAILURE: test_get_guessed_word() with no letters guessed')
         print('\t Expected "_ _ _ _ _ _ ", but got ' + guessed_word)
-    else: print('SUCCESS: test_get_guessed_word() with all letters guessed')
+    else: print('SUCCESS: test_get_guessed_word() with no letters guessed')
 
 def test_get_available_letters():
     print('Testing get_available_letters()\n')

@@ -118,6 +118,42 @@ def test_get_available_letters():
         print("SUCCESS: get_available_letters()")
 
 
+def test_match_with_gaps():
+
+    Passed = True
+
+    testCases = [
+
+        ['app_ _ ',       'apple',      True],
+        ['apple',       'wrongSize',  False],
+        ['_ _ ',          'aa',         True],
+        ['testSize',    'badSize',    False],
+        ['a_ _ le',       'apple',      True],
+        ['h_ _ d',        'hood',       True],
+        ['adva_ _ _ ged',  'advantaged', False],
+        ['adva_ _ _ ged',  'advantages', False],
+        ['adva_ _ _ ge_ ',  'advantages', False],
+        ['amba_ _ ador',  'ambassador', True],
+        ['a_ _ _ _ _ _ ble',  'assailable', False],
+        ['a_ _ _ _ _ _ ble',  'attachable', False],
+        ['a_ _ a_ _ _ ble',  'attainable', False]
+    ]
+
+    for case in testCases:
+        my_word = case[0]
+        other_word = case[1]
+        expected_result = case[2]
+
+        result = match_with_gaps(my_word, other_word)
+
+        if result != expected_result:
+            print("FAILURE: test_match_with_gaps()")
+            print('\tExpected', str(expected_result) + ', but got', str(result),
+                  'for my_word "' + my_word + '" and other_word "' + other_word + '"')
+            Passed = False
+
+    if Passed:
+        print("SUCCESS: test_match_with_gaps()")
 
 print("----------------------------------------------------------------------")
 print("Testing is_word_guessed...")
@@ -128,4 +164,7 @@ test_get_guessed_word()
 print("----------------------------------------------------------------------")
 print("Testing get_available_letters...")
 test_get_available_letters()
+print("----------------------------------------------------------------------")
+print("Testing test_match_with_gaps...")
+test_match_with_gaps()
 print("----------------------------------------------------------------------")
