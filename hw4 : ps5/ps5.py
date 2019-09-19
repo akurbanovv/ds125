@@ -138,9 +138,11 @@ class TitleTrigger(PhraseTrigger):
         title = NewsStory.get_title()
         return self.is_phrase_in(title)
 
-
 # Problem 4
-# TODO: DescriptionTrigger
+class DescriptionTrigger(PhraseTrigger):
+    def evaluate(self, NewsStory):
+            description = NewsStory.get_description()
+            return self.is_phrase_in(description)
 
 # TIME TRIGGERS
 
