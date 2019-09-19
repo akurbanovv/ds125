@@ -133,7 +133,11 @@ class PhraseTrigger(Trigger):
         return False
 
 # Problem 3
-# TODO: TitleTrigger
+class TitleTrigger(PhraseTrigger):
+    def evaluate(self, NewsStory):
+        title = NewsStory.get_title()
+        return self.is_phrase_in(title)
+
 
 # Problem 4
 # TODO: DescriptionTrigger
