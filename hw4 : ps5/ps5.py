@@ -1,7 +1,7 @@
 # 6.0001/6.00 Problem Set 5 - RSS Feed Filter
-# Name:
-# Collaborators:
-# Time:
+# Name: Akhmadjon Kurbanov
+# Collaborators: Sarah Spitz
+# Time: 
 
 import feedparser
 import string
@@ -11,6 +11,7 @@ from project_util import translate_html
 from mtTkinter import *
 from datetime import datetime
 import pytz
+
 
 
 #-----------------------------------------------------------------------
@@ -54,8 +55,28 @@ def process(url):
 
 # Problem 1
 
-# TODO: NewsStory
+class NewsStory(object):
+    def __init__(self, guid, title, description, link, pubdate):
+        self.guid = guid
+        self.title = title.lower() #!!! lower
+        self.description = description.lower() 
+        self.link = link
+        self.pubdate = pubdate
 
+    def get_guid(self):
+        return self.guid
+    
+    def get_title(self):
+        return self.title
+        
+    def get_description(self):
+        return self.description
+
+    def get_link(self):
+        return self.link
+
+    def get_pubdate(self):
+        return self.pubdate
 
 #======================
 # Triggers
@@ -73,7 +94,43 @@ class Trigger(object):
 # PHRASE TRIGGERS
 
 # Problem 2
-# TODO: PhraseTrigger
+class PhraseTrigger(Trigger):
+    def __init__(self, phrase):
+        # -----
+        self.phrase = phrase.lower()
+        
+        for char in self.phrase:
+            assert char not in string.punctuation, "Invalid phrase: there is puctuation in the phrase"
+        
+        phrase_splitted = self.phrase.split()
+        number_of_word = len(phrase_splitted)
+        number_of_spaces = self.phrase.count(' ')
+
+        if number_of_word - number_of_spaces != 1:
+            assert True, "Invalid phrase: phrase had wrong amount of white spaces"
+        # -----
+        
+
+        # check for space comparing white space and amount of words 
+        
+    def is_phrase_in(self, text):
+        text = text.lower()
+        for char in string.punctuation:
+            text = text.replace(char, ' ')
+
+        phrase_list = self.phrase.split()
+        text_list = text.split() # creating a list with words from text snippet
+
+        for word_in_text in text_list:
+            for word_in_phrase in phrase_list:
+                if word_in_text == word_in_phrase:
+                    if len(phrase_list) == 1: return True
+                    phrase_list.remove(word_in_phrase)
+                    break
+                else:
+                    phrase_list = self.phrase.split()
+                    break
+        return False
 
 # Problem 3
 # TODO: TitleTrigger
@@ -217,9 +274,30 @@ def main_thread(master):
 
 
 if __name__ == '__main__':
-    root = Tk()
-    root.title("Some RSS parser")
-    t = threading.Thread(target=main_thread, args=(root,))
-    t.start()
-    root.mainloop()
+    # root = Tk()
+    # root.title("Some RSS parser")
+    # t = threading.Thread(target=main_thread, args=(root,))
+    # t.start()
+    # root.mainloop()
 
+    # story = NewsStory(201, "purple cow", "desc", "link", 2019)
+    test1 = PhraseTrigger('Purple cow')
+    print("All true:\n")
+    print(test1.is_phrase_in('PURPLE COW'))
+    print(test1.is_phrase_in('The purple cow is soft and cuddly.'))
+    print(test1.is_phrase_in('The farmer owns a really PURPLE cow.'))
+    print(test1.is_phrase_in('Purple!!! Cow!!!'))
+    print(test1.is_phrase_in('purple@#$%cow'))
+    print(test1.is_phrase_in('Did you see a purple cow?'))
+
+    test2 = PhraseTrigger('one two three')
+    print(test2.is_phrase_in('one two cat dog one two three'))
+
+    print("All false:\n")
+    print(test1.is_phrase_in('Purple cows are cool!'))
+    print(test1.is_phrase_in('The purple blob over there is a cow.'))
+    print(test1.is_phrase_in('How now brown cow.'))
+    print(test1.is_phrase_in('Cow!!! Purple!!!'))
+    print(test1.is_phrase_in('purplecowpurplecowpurplecow'))
+
+    
