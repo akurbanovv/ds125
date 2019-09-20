@@ -96,9 +96,9 @@ class Trigger(object):
 # Problem 2
 class PhraseTrigger(Trigger):
     def __init__(self, phrase):
-        # -----
         self.phrase = phrase.lower()
         
+        # -----validation of phrase trigger 
         for char in self.phrase:
             assert char not in string.punctuation, "Invalid phrase: there is puctuation in the phrase"
         
@@ -109,8 +109,6 @@ class PhraseTrigger(Trigger):
         if number_of_word - number_of_spaces != 1:
             assert True, "Invalid phrase: phrase had wrong amount of white spaces"
         # -----
-        
-
         # check for space comparing white space and amount of words 
         
     def is_phrase_in(self, text):
@@ -170,13 +168,30 @@ class AfterTrigger(TimeTrigger):
 # COMPOSITE TRIGGERS
 
 # Problem 7
-# TODO: NotTrigger
+class NotTrigger(Trigger):
+    def __init__(self, trigger):
+        self.trigger = trigger
+
+    def evaluate(self, NewsStory):
+        return not self.trigger.evaluate(NewsStory)    
 
 # Problem 8
-# TODO: AndTrigger
+class AndTrigger(Trigger):
+    def __init__(self, trigger1, trigger2):
+        self.trigger1 = trigger1
+        self.trigger2 = trigger2
+    
+    def evaluate(self, NewsStory):
+        return self.trigger1.evaluate(NewsStory) and self.trigger2.evaluate(NewsStory)
 
 # Problem 9
-# TODO: OrTrigger
+class OrTrigger(Trigger):
+    def __init__(self, trigger1, trigger2):
+        self.trigger1 = trigger1
+        self.trigger2 = trigger2
+    
+    def evaluate(self, NewsStory):
+        return self.trigger1.evaluate(NewsStory) or self.trigger2.evaluate(NewsStory)
 
 
 #======================
