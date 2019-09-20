@@ -1,7 +1,7 @@
 # 6.0001/6.00 Problem Set 5 - RSS Feed Filter
 # Name: Akhmadjon Kurbanov
 # Collaborators: Sarah Spitz
-# Time: 
+# Time: 7.5
 
 import feedparser
 import string
@@ -205,7 +205,7 @@ def filter_stories(stories, triggerlist):
 
     Returns: a list of only the stories for which a trigger in triggerlist fires.
     """
-    
+
     tr_stories_list = []
 
     for story in stories: 
@@ -228,6 +228,7 @@ def read_trigger_config(filename):
     Returns: a list of trigger objects specified by the trigger configuration
         file.
     """
+        
     # We give you the code to read in the file and eliminate blank lines and
     # comments. You don't need to know how it works for now!
     trigger_file = open(filename, 'r')
@@ -237,12 +238,59 @@ def read_trigger_config(filename):
         if not (len(line) == 0 or line.startswith('//')):
             lines.append(line)
 
-    # TODO: Problem 11
     # line is the list of lines that you need to parse and for which you need
     # to build triggers
+    trig_def_dict = {}
+    list_to_return = []
+    
+    for trig_def in lines:
+        trig_def_list = trig_def.split(',')
 
-    print(lines) # for now, print it so you see what it contains!
+        if trig_def_list[0] != 'ADD':
+            if len(trig_def_list) == 3:
+                trig_name = trig_def_list[0]
+                trig_type = trig_def_list[1]
+                trig_parameter = trig_def_list[2]
 
+                if (trig_type == 'TITLE'):
+                    trig_def_dict[trig_name] = TitleTrigger(trig_parameter)
+
+                if (trig_type == 'DESCRIPTION'):
+                    trig_def_dict[trig_name] = DescriptionTrigger(trig_parameter)
+                
+                if (trig_type == 'AFTER'):
+                    trig_def_dict[trig_name] = AfterTrigger(trig_parameter)
+                
+                if (trig_type == 'BEFORE'):
+                    trig_def_dict[trig_name] = BeforeTrigger(trig_parameter)
+
+                if (trig_type == 'NOT'):
+                    trig_def_dict[trig_name] = NotTrigger(trig_parameter)
+            
+            if len(trig_def_list) == 4:
+                trig_name = trig_def_list[0]
+                trig_type = trig_def_list[1]
+                trig_name_parameter1 = trig_def_list[2]
+                trig_name_parameter2 = trig_def_list[3]
+
+                trig_parameter1 = trig_def_dict.get(trig_name_parameter1)
+                trig_parameter2 = trig_def_dict.get(trig_name_parameter2)
+
+                if (trig_type == 'OR'):
+                    trig_def_dict[trig_name] = OrTrigger(trig_parameter1, trig_parameter2)
+
+                if (trig_type == 'AND'):
+                    trig_def_dict[trig_name] = AndTrigger(trig_parameter1, trig_parameter2)
+        
+        else:
+            for trig_name in trig_def_list:
+                print(trig_name)
+                if trig_name != 'ADD':
+                    list_to_return.append(trig_def_dict.get(trig_name))
+
+           
+    return list_to_return
+        
 
 
 SLEEPTIME = 120 #seconds -- how often we poll
@@ -256,10 +304,8 @@ def main_thread(master):
         t3 = DescriptionTrigger("Clinton")
         t4 = AndTrigger(t2, t3)
         triggerlist = [t1, t4]
-
-        # Problem 11
-        # TODO: After implementing read_trigger_config, uncomment this line 
-        # triggerlist = read_trigger_config('triggers.txt')
+        
+        triggerlist = read_trigger_config('triggers.txt')
         
         # HELPER CODE - you don't need to understand this!
         # Draws the popup window that displays the filtered stories
@@ -311,30 +357,10 @@ def main_thread(master):
 
 
 if __name__ == '__main__':
-    # root = Tk()
-    # root.title("Some RSS parser")
-    # t = threading.Thread(target=main_thread, args=(root,))
-    # t.start()
-    # root.mainloop()
-
-    # story = NewsStory(201, "purple cow", "desc", "link", 2019)
-    test1 = PhraseTrigger('Purple cow')
-    print("All true:\n")
-    print(test1.is_phrase_in('PURPLE COW'))
-    print(test1.is_phrase_in('The purple cow is soft and cuddly.'))
-    print(test1.is_phrase_in('The farmer owns a really PURPLE cow.'))
-    print(test1.is_phrase_in('Purple!!! Cow!!!'))
-    print(test1.is_phrase_in('purple@#$%cow'))
-    print(test1.is_phrase_in('Did you see a purple cow?'))
-
-    test2 = PhraseTrigger('one two three')
-    print(test2.is_phrase_in('one two cat dog one two three'))
-
-    print("All false:\n")
-    print(test1.is_phrase_in('Purple cows are cool!'))
-    print(test1.is_phrase_in('The purple blob over there is a cow.'))
-    print(test1.is_phrase_in('How now brown cow.'))
-    print(test1.is_phrase_in('Cow!!! Purple!!!'))
-    print(test1.is_phrase_in('purplecowpurplecowpurplecow'))
-
+    root = Tk()
+    root.title("Some RSS parser")
+    t = threading.Thread(target=main_thread, args=(root,))
+    t.start()
+    root.mainloop()
     
+    # print(read_trigger_config('triggers.txt')) 
