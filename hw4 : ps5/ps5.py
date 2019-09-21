@@ -13,7 +13,6 @@ from datetime import datetime
 import pytz
 
 
-
 #-----------------------------------------------------------------------
 
 #======================
@@ -54,11 +53,10 @@ def process(url):
 #======================
 
 # Problem 1
-
 class NewsStory(object):
     def __init__(self, guid, title, description, link, pubdate):
         self.guid = guid
-        self.title = title.lower() #!!! lower
+        self.title = title.lower()      # dealing with lower case
         self.description = description.lower() 
         self.link = link
         self.pubdate = pubdate
@@ -98,7 +96,7 @@ class PhraseTrigger(Trigger):
     def __init__(self, phrase):
         self.phrase = phrase.lower()
         
-        # -----validation of phrase trigger 
+        # validating phrase which is getting passed 
         for char in self.phrase:
             assert char not in string.punctuation, "Invalid phrase: there is puctuation in the phrase"
         
@@ -108,9 +106,8 @@ class PhraseTrigger(Trigger):
 
         if number_of_word - number_of_spaces != 1:
             assert True, "Invalid phrase: phrase had wrong amount of white spaces"
-        # -----
-        # check for space comparing white space and amount of words 
-        
+    
+    # checking if the phrase in text (title, descr.)
     def is_phrase_in(self, text):
         text = text.lower()
         for char in string.punctuation:
@@ -163,8 +160,6 @@ class AfterTrigger(TimeTrigger):
         self.pubdate = self.pubdate.replace(tzinfo=pytz.timezone("EST"))
         return self.pubdate > self.time
 
-
-
 # COMPOSITE TRIGGERS
 
 # Problem 7
@@ -205,21 +200,20 @@ def filter_stories(stories, triggerlist):
 
     Returns: a list of only the stories for which a trigger in triggerlist fires.
     """
-
     tr_stories_list = []
 
     for story in stories: 
         for trigger in triggerlist:
             if trigger.evaluate(story): 
                 tr_stories_list.append(story)
-                
+           
     return tr_stories_list
-
 
 
 #======================
 # User-Specified Triggers
 #======================
+
 # Problem 11
 def read_trigger_config(filename):
     """
@@ -228,9 +222,6 @@ def read_trigger_config(filename):
     Returns: a list of trigger objects specified by the trigger configuration
         file.
     """
-        
-    # We give you the code to read in the file and eliminate blank lines and
-    # comments. You don't need to know how it works for now!
     trigger_file = open(filename, 'r')
     lines = []
     for line in trigger_file:
@@ -238,60 +229,55 @@ def read_trigger_config(filename):
         if not (len(line) == 0 or line.startswith('//')):
             lines.append(line)
 
-    # line is the list of lines that you need to parse and for which you need
-    # to build triggers
-    trig_def_dict = {}
-    list_to_return = []
+    triggers_dict = {}
+    triggers_list = []
     
-    for trig_def in lines:
-        trig_def_list = trig_def.split(',')
+    for line in lines:
+        line_list = line.split(',')
 
-        if trig_def_list[0] != 'ADD':
-            if len(trig_def_list) == 3:
-                trig_name = trig_def_list[0]
-                trig_type = trig_def_list[1]
-                trig_parameter = trig_def_list[2]
+        if line_list[0] != 'ADD':
+            if len(line_list) == 3:
+                trigger_name = line_list[0]
+                trigger_type = line_list[1]
+                trigger_parameter = line_list[2]
 
-                if (trig_type == 'TITLE'):
-                    trig_def_dict[trig_name] = TitleTrigger(trig_parameter)
+                if (trigger_type == 'TITLE'):
+                    triggers_dict[trigger_name] = TitleTrigger(trigger_parameter)
 
-                if (trig_type == 'DESCRIPTION'):
-                    trig_def_dict[trig_name] = DescriptionTrigger(trig_parameter)
+                if (trigger_type == 'DESCRIPTION'):
+                    triggers_dict[trigger_name] = DescriptionTrigger(trigger_parameter)
                 
-                if (trig_type == 'AFTER'):
-                    trig_def_dict[trig_name] = AfterTrigger(trig_parameter)
+                if (trigger_type == 'AFTER'):
+                    triggers_dict[trigger_name] = AfterTrigger(trigger_parameter)
                 
-                if (trig_type == 'BEFORE'):
-                    trig_def_dict[trig_name] = BeforeTrigger(trig_parameter)
+                if (trigger_type == 'BEFORE'):
+                    triggers_dict[trigger_name] = BeforeTrigger(trigger_parameter)
 
-                if (trig_type == 'NOT'):
-                    trig_def_dict[trig_name] = NotTrigger(trig_parameter)
+                if (trigger_type == 'NOT'):
+                    triggers_dict[trigger_name] = NotTrigger(trigger_parameter)
             
-            if len(trig_def_list) == 4:
-                trig_name = trig_def_list[0]
-                trig_type = trig_def_list[1]
-                trig_name_parameter1 = trig_def_list[2]
-                trig_name_parameter2 = trig_def_list[3]
+            if len(line_list) == 4:
+                trigger_name = line_list[0]
+                trigger_type = line_list[1]
+                trigger_name_parameter1 = line_list[2]
+                trigger_name_parameter2 = line_list[3]
 
-                trig_parameter1 = trig_def_dict.get(trig_name_parameter1)
-                trig_parameter2 = trig_def_dict.get(trig_name_parameter2)
+                trigger_parameter1 = triggers_dict.get(trigger_name_parameter1)
+                trigger_parameter2 = triggers_dict.get(trigger_name_parameter2)
 
-                if (trig_type == 'OR'):
-                    trig_def_dict[trig_name] = OrTrigger(trig_parameter1, trig_parameter2)
+                if (trigger_type == 'OR'):
+                    triggers_dict[trigger_name] = OrTrigger(trigger_parameter1, trigger_parameter2)
 
-                if (trig_type == 'AND'):
-                    trig_def_dict[trig_name] = AndTrigger(trig_parameter1, trig_parameter2)
+                if (trigger_type == 'AND'):
+                    triggers_dict[trigger_name] = AndTrigger(trigger_parameter1, trigger_parameter2)
         
         else:
-            for trig_name in trig_def_list:
-                print(trig_name)
-                if trig_name != 'ADD':
-                    list_to_return.append(trig_def_dict.get(trig_name))
+            for trigger_name in line_list:
+                if trigger_name!= 'ADD':
+                    triggers_list.append(triggers_dict.get(trigger_name))
 
-           
-    return list_to_return
+    return triggers_list
         
-
 
 SLEEPTIME = 120 #seconds -- how often we poll
 
@@ -362,5 +348,3 @@ if __name__ == '__main__':
     t = threading.Thread(target=main_thread, args=(root,))
     t.start()
     root.mainloop()
-    
-    # print(read_trigger_config('triggers.txt')) 
