@@ -1,7 +1,5 @@
 # 6.0001/6.00 Problem Set 5 - RSS Feed Filter
 # Name: Akhmadjon Kurbanov
-# Collaborators: Sarah Spitz
-# Time: 7.5
 
 import feedparser
 import string
@@ -56,7 +54,7 @@ def process(url):
 class NewsStory(object):
     def __init__(self, guid, title, description, link, pubdate):
         self.guid = guid
-        self.title = title.lower()      # dealing with lower case
+        self.title = title.lower()     
         self.description = description.lower() 
         self.link = link
         self.pubdate = pubdate
