@@ -8,19 +8,24 @@ import random
 
 def flipCoin():
     #1 is heads, 0 is tails
-    return random.choice([1,0])
+    return random.choice(['T','H'])
 
-def testRoll(n = 10):
-    result = '' 
+def gotMatch(n, targetMatch):
+    result = ''
     for i in range(n):
-        result = result + str(flipCoin()) 
-    print(result)
+        result += flipCoin()
+    if targetMatch in result: return True
+    else: return False
 
-def runSim(goal, numTrials, txt):
-    total = 0
-
+def matchProb(n, numTrials):
+    numHits = 0
+    targetMatch = 'HH'
+    for i in range(numTrials):
+        if gotMatch(n, targetMatch):
+            numHits += 1
+    return numHits/numTrials
+    
 if __name__ == '__main__':
-    testRoll(2)
     
 
 
