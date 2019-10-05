@@ -100,8 +100,8 @@ class SimpleBacteria(object):
         Returns:
             bool: True with probability self.death_prob, False otherwise.
         """
-        
-        if random.random() < self.death_prob: return True
+        some_prob = random.random()
+        if some_prob < self.death_prob: return True
         else: return False
         
     def reproduce(self, pop_density):
@@ -130,7 +130,7 @@ class SimpleBacteria(object):
         Raises:
             NoChildException if this bacteria cell does not reproduce.
         """
-            
+
         repr_prob = self.birth_prob * (1 - pop_density)
         some_prob = random.random()
             
@@ -163,7 +163,7 @@ class Patient(object):
         Returns:
             int: The total bacteria population
         """
-        return self.bacteria.size
+        return len(self.bacteria)
 
     def update(self):
         """
@@ -192,20 +192,22 @@ class Patient(object):
         # determine whether each bacteria cell dies
         surv_bacteria = []
         for bacterium in self.bacteria:
-            if not bacterium.is_killed:
+            if not bacterium.is_killed():
                 surv_bacteria.append(bacterium)
-        # self.bacteria = surv_bacteria
 
-        pop_density = self.bacteria.size / self.max_pop
+        # calculate the current population density
+        pop_density = len(surv_bacteria) / self.max_pop
         offspring_bacteria = []
         
-        for bacterium in self.bacteria:
-            try: 
-                offspring_bacteria.append(bacterium.reproduce(pop_density))
-            except NoChildException():
-                pass
-
-        self.bacteria = self.bacteria + offspring_bacteria 
+        # create new offspring bacteria cells
+        for bacterium in surv_bacteria:
+            try:
+                offspring = bacterium.reproduce(pop_density)
+                offspring_bacteria.append(offspring)
+            except Exception:
+                continue
+                                
+        self.bacteria = surv_bacteria + offspring_bacteria 
          
 
 ##########################
@@ -254,8 +256,7 @@ def simulation_without_antibiotic(num_bacteria,
     Args:
         num_bacteria (int): number of SimpleBacteria to create for patient
         max_pop (int): maximum bacteria population for patient
-        birth_prob (float in [0, 1]): maximum reproduction
-            probability
+        birth_prob (float in [0, 1]): maximum reproduction probability
         death_prob (float in [0, 1]): maximum death probability
         num_trials (int): number of simulation runs to execute
 
@@ -263,11 +264,39 @@ def simulation_without_antibiotic(num_bacteria,
         populations (list of lists or 2D array): populations[i][j] is the
             number of bacteria in trial i at time step j
     """
-    pass  # TODO
+    populations = []
+    timesteps = 300 
+
+    for trial in range(num_trials): 
+        bacteria = []
+        for i in range(num_bacteria):
+            bacteria.append(SimpleBacteria(birth_prob, death_prob))
+
+        patient = Patient(bacteria, max_pop)
+        
+        pop_per_trial = []
+        for i in range(timesteps):
+            pop_per_trial.append(patient.get_total_pop())
+            patient.update()
+
+        populations.append(pop_per_trial)
+     
+    x_coords = []
+    y_coords = [] 
+    for i in range(timesteps):
+        x_coords.append(i)
+        y_coords.append(calc_pop_avg(populations, i))
+        
+    # print(y_coords)
+    # print()
+    # print(x_coords)
+
+    make_one_curve_plot(x_coords, y_coords, 'Timesteps', 'Average Population', 'Without Antibiotic')
+    return populations  
 
 
 # When you are ready to run the simulation, uncomment the next line
-# populations = simulation_without_antibiotic(100, 1000, 0.1, 0.025, 50)
+populations = simulation_without_antibiotic(100, 1000, 0.1, 0.025, 50)
 
 ##########################
 # PROBLEM 3
