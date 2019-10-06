@@ -140,7 +140,6 @@ class SimpleBacteria(object):
             raise NoChildException()
         
 
-
 class Patient(object):
     """
     Representation of a simplified patient. The patient does not take any
@@ -335,11 +334,6 @@ def calc_pop_std(populations, t):
     std = math.sqrt(dist/n)                              # calculating the standard deviation
     return std
 
-    
-
-
-
-
 
 def calc_95_ci(populations, t):
     """
@@ -362,7 +356,14 @@ def calc_95_ci(populations, t):
 
         I.e., you should return a tuple containing (mean, width)
     """
+    std = calc_pop_std(populations, t)
+    n = len(populations)
+    SEM = std / math.sqrt(n)
     
+    mean = calc_pop_avg(populations, t) 
+    ci = 1.96*SEM
+
+    return (mean, ci)   
 
 
 ##########################
@@ -382,11 +383,14 @@ class ResistantBacteria(SimpleBacteria):
                 bacteria cell. This is the maximum probability of the
                 offspring acquiring antibiotic resistance
         """
-        pass  # TODO
+        self.birth_prob = birth_prob
+        self.death_prob = death_prob
+        self.resistant = resistant
+        self.mut_prob = mut_prob
 
     def get_resistant(self):
         """Returns whether the bacteria has antibiotic resistance"""
-        pass  # TODO
+        return self.resistant
 
     def is_killed(self):
         """Stochastically determines whether this bacteria cell is killed in
@@ -400,7 +404,18 @@ class ResistantBacteria(SimpleBacteria):
             bool: True if the bacteria dies with the appropriate probability
                 and False otherwise.
         """
-        pass  # TODO
+        some_prob = random.random()
+        if (self.resistant):
+            if some_prob < self.death_prob: return True
+            # else: return False 
+        else: 
+            if some_prob < self.death_prob/4: return True
+            # else: return False
+        return False   
+
+
+
+
 
     def reproduce(self, pop_density):
         """
@@ -431,7 +446,27 @@ class ResistantBacteria(SimpleBacteria):
             as this bacteria. Otherwise, raises a NoChildException if this
             bacteria cell does not reproduce.
         """
-        pass  # TODO
+        repr_prob = self.birth_prob * (1 - pop_density)
+        some_prob = random.random()
+        
+
+
+        if some_prob < repr_prob: 
+            if self.resistant: 
+                return ResistantBacteria(self.birth_prob, 
+                                         self.death_prob, 
+                                         self.resistant, 
+                                         self.mut_prob)
+            else:
+                rest_prob = self.mut_prob * (1-pop_density)
+                resistance = False
+                if some_prob < rest_prob: resistance = True
+                return ResistantBacteria(self.birth_prob, 
+                                         self.death_prob, 
+                                         resistance, 
+                                         self.mut_prob)
+        else: 
+            raise NoChildException()
 
 
 class TreatedPatient(Patient):
@@ -454,14 +489,19 @@ class TreatedPatient(Patient):
         Don't forget to call Patient's __init__ method at the start of this
         method.
         """
-        pass  # TODO
+        Patient.__init__(self, bacteria, max_pop)
+
+        # self.bacteria = bacteria
+        # self.max_pop = max_pop
+
+        self.on_antibiotic = False
 
     def set_on_antibiotic(self):
         """
         Administer an antibiotic to this patient. The antibiotic acts on the
         bacteria population for all subsequent time steps.
         """
-        pass  # TODO
+        self.on_antibiotic = True
 
     def get_resist_pop(self):
         """
@@ -470,7 +510,9 @@ class TreatedPatient(Patient):
         Returns:
             int: the number of bacteria with antibiotic resistance
         """
-        pass  # TODO
+        for bacterium in self.bacteria:
+            
+            
 
     def update(self):
         """
