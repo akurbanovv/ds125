@@ -296,7 +296,7 @@ def simulation_without_antibiotic(num_bacteria,
 
 
 # When you are ready to run the simulation, uncomment the next line
-populations = simulation_without_antibiotic(100, 1000, 0.1, 0.025, 50)
+# populations = simulation_without_antibiotic(100, 1000, 0.1, 0.025, 50)
 
 ##########################
 # PROBLEM 3
@@ -323,7 +323,22 @@ def calc_pop_std(populations, t):
         float: the standard deviation of populations across different trials at
              a specific time step
     """
-    pass  # TODO
+
+    mean = calc_pop_avg(populations, t)                 # calculating mean  
+    data_point = []                                      
+    for pop in populations: data_point.append(pop[t])   # getting data points
+    n = len(data_point)                                 # getting the number of data points
+
+    dist = 0
+    for value in data_point: dist += (value - mean)**2  # getting the square of its distance to the mean
+
+    std = math.sqrt(dist/n)                              # calculating the standard deviation
+    return std
+
+    
+
+
+
 
 
 def calc_95_ci(populations, t):
@@ -347,7 +362,7 @@ def calc_95_ci(populations, t):
 
         I.e., you should return a tuple containing (mean, width)
     """
-    pass  # TODO
+    
 
 
 ##########################
