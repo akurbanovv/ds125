@@ -130,7 +130,7 @@ class SimpleBacteria(object):
         Raises:
             NoChildException if this bacteria cell does not reproduce.
         """
-
+        
         repr_prob = self.birth_prob * (1 - pop_density)
         some_prob = random.random()
             
@@ -268,30 +268,38 @@ def simulation_without_antibiotic(num_bacteria,
     timesteps = 300 
 
     for trial in range(num_trials): 
-        bacteria = []
+        # instantiate a list of SimpleBacteria
+        bacteria = []     
         for i in range(num_bacteria):
             bacteria.append(SimpleBacteria(birth_prob, death_prob))
 
+        # instantiate a patient
         patient = Patient(bacteria, max_pop)
         
+        # run a simulation forr 300 timesteps recording the bacteria population
         pop_per_trial = []
         for i in range(timesteps):
             pop_per_trial.append(patient.get_total_pop())
             patient.update()
 
+         # recording the bacteria populations per trial
         populations.append(pop_per_trial)
      
+    
+    # prepare coordinate values for the plot
     x_coords = []
     y_coords = [] 
+    x_lebel = 'Timestep'
+    y_lebel = 'Average Population'
+    title = 'Without Antibiotic'
     for i in range(timesteps):
         x_coords.append(i)
         y_coords.append(calc_pop_avg(populations, i))
 
-    make_one_curve_plot(x_coords, y_coords, 'Timesteps', 'Average Population', 'Without Antibiotic')
+    make_one_curve_plot(x_coords, y_coords, x_lebel, y_lebel, title)
     return populations  
 
 
-# When you are ready to run the simulation, uncomment the next line
 # populations = simulation_without_antibiotic(100, 1000, 0.1, 0.025, 50)
 
 ##########################
@@ -321,14 +329,14 @@ def calc_pop_std(populations, t):
     """
 
     mean = calc_pop_avg(populations, t)                 # calculating mean  
-    data_point = []                                      
+    data_point = []                                     # initialize data points list
     for pop in populations: data_point.append(pop[t])   # getting data points
     n = len(data_point)                                 # getting the number of data points
 
-    dist = 0
+    dist = 0                                            # initialize dastance 
     for value in data_point: dist += (value - mean)**2  # getting the square of its distance to the mean
 
-    std = math.sqrt(dist/n)                              # calculating the standard deviation
+    std = math.sqrt(dist/n)                             # calculating the standard deviation
     return std
 
 
@@ -353,12 +361,12 @@ def calc_95_ci(populations, t):
 
         I.e., you should return a tuple containing (mean, width)
     """
-    std = calc_pop_std(populations, t)
-    n = len(populations)
-    SEM = std / math.sqrt(n)
-    
-    mean = calc_pop_avg(populations, t) 
-    ci = 1.96*SEM
+    std = calc_pop_std(populations, t)      # calculating standard deviation
+    n = len(populations)                    # calculating population size
+    SEM = std / math.sqrt(n)                # calculating standard error of the mean 
+
+    mean = calc_pop_avg(populations, t)     # calculating mean 
+    ci = 1.96*SEM                           # calculating confidence interval
 
     return (mean, ci)   
 
@@ -404,15 +412,9 @@ class ResistantBacteria(SimpleBacteria):
         some_prob = random.random()
         if (self.resistant):
             if some_prob < self.death_prob: return True
-            # else: return False 
         else: 
             if some_prob < self.death_prob/4: return True
-            # else: return False
         return False   
-
-
-
-
 
     def reproduce(self, pop_density):
         """
@@ -453,7 +455,8 @@ class ResistantBacteria(SimpleBacteria):
                                          self.resistant, 
                                          self.mut_prob)
             else:
-                resist_prob = self.mut_prob * (1-pop_density)
+                resist_prob = self.mut_prob * (1 - pop_density)
+                some_prob = random.random()
                 resistance = False
                 if some_prob < resist_prob: resistance = True
                 return ResistantBacteria(self.birth_prob, 
@@ -485,10 +488,6 @@ class TreatedPatient(Patient):
         method.
         """
         Patient.__init__(self, bacteria, max_pop)
-
-        # self.bacteria = bacteria
-        # self.max_pop = max_pop
-
         self.on_antibiotic = False
 
     def set_on_antibiotic(self):
@@ -509,8 +508,6 @@ class TreatedPatient(Patient):
         for bacterium in self.bacteria:
             if bacterium.get_resistant(): num_resist += 1
         return num_resist
-
-            
 
     def update(self):
         """
@@ -564,8 +561,7 @@ class TreatedPatient(Patient):
                 continue
 
         # reassigning bacteria list with survived and offspring bacteria                 
-        self.bacteria = surv_bacteria + offspring_bacteria 
-        
+        self.bacteria = surv_bacteria + offspring_bacteria        
 
 
 ##########################
@@ -599,8 +595,8 @@ def simulation_with_antibiotic(num_bacteria,
         num_bacteria (int): number of ResistantBacteria to create for
             the patient
         max_pop (int): maximum bacteria population for patient
-        birth_prob (float int [0-1]): reproduction probability
-        death_prob (float in [0, 1]): probability of a bacteria cell dying
+        birth_prob (float int [0, 1]): reproduction probability
+        death_prob (float int [0, 1]): probability of a bacteria cell dying
         resistant (bool): whether the bacteria initially have
             antibiotic resistance
         mut_prob (float in [0, 1]): mutation probability for the
@@ -616,23 +612,83 @@ def simulation_with_antibiotic(num_bacteria,
             resistant_pop[i][j] is the number of resistant bacteria for
             trial i at time step j
     """
-    pass  # TODO
+    total_pop = []
+    resist_pop = []
+    timesteps_without_antibio = 150
+    timesteps_with_antibio = 250
+    timesteps_total = timesteps_without_antibio + timesteps_with_antibio
 
+    for trial in range(num_trials):
+        # instantiate a list of ResistantBacteria
+        bacteria = []   
+        for i in range(num_bacteria):
+            bacteria.append(ResistantBacteria(birth_prob, 
+                                              death_prob, 
+                                              resistant, 
+                                              mut_prob))
+    
+        # instantiate a patient
+        patient = TreatedPatient(bacteria, max_pop)
 
-# When you are ready to run the simulations, uncomment the next lines one
-# at a time
-# total_pop, resistant_pop = simulation_with_antibiotic(num_bacteria=100,
-#                                                       max_pop=1000,
-#                                                       birth_prob=0.3,
-#                                                       death_prob=0.2,
-#                                                       resistant=False,
-#                                                       mut_prob=0.8,
-#                                                       num_trials=50)
+        # run a simulation for 150 timesteps
+        total_pop_per_trial = []
+        resist_pop_per_trial = []
+        for i in range(timesteps_without_antibio):
+            total_pop_per_trial.append(patient.get_total_pop())
+            resist_pop_per_trial.append(patient.get_resist_pop())
+            patient.update()
+        
+        # add the antibiotic
+        patient.set_on_antibiotic()   
 
-# total_pop, resistant_pop = simulation_with_antibiotic(num_bacteria=100,
-#                                                       max_pop=1000,
-#                                                       birth_prob=0.17,
-#                                                       death_prob=0.2,
-#                                                       resistant=False,
-#                                                       mut_prob=0.8,
-#                                                       num_trials=50)
+        # run the simulation for an additional 250 timesteps
+        for i in range(timesteps_with_antibio):
+            total_pop_per_trial.append(patient.get_total_pop())
+            resist_pop_per_trial.append(patient.get_resist_pop())
+            patient.update()
+        
+        # recording the total abd resistance bacteria populations per trial
+        total_pop.append(total_pop_per_trial)
+        resist_pop.append(resist_pop_per_trial)
+
+    # prepare coordinate values for the plot
+    x_coords = []
+    y_coords1 = []
+    y_coords2 = []
+    y_name1 = 'Total'
+    y_name2 = 'Resistant'
+    x_lebel = 'Timestep'
+    y_lebel = 'Average Population'
+    title = 'With an Antibiotic'
+    
+    for i in range(timesteps_total):
+        x_coords.append(i)
+        y_coords1.append(calc_pop_avg(total_pop, i))
+        y_coords2.append(calc_pop_avg(resist_pop, i))
+
+    make_two_curve_plot(x_coords, 
+                        y_coords1, 
+                        y_coords2, 
+                        y_name1, 
+                        y_name2, 
+                        x_lebel, 
+                        y_lebel, 
+                        title)
+
+    return (total_pop, resist_pop)
+
+total_pop, resistant_pop = simulation_with_antibiotic(num_bacteria=100,
+                                                      max_pop=1000,
+                                                      birth_prob=0.3,
+                                                      death_prob=0.2,
+                                                      resistant=False,
+                                                      mut_prob=0.8,
+                                                      num_trials=50)
+
+total_pop, resistant_pop = simulation_with_antibiotic(num_bacteria=100,
+                                                      max_pop=1000,
+                                                      birth_prob=0.17,
+                                                      death_prob=0.2,
+                                                      resistant=False,
+                                                      mut_prob=0.8,
+                                                      num_trials=50)
