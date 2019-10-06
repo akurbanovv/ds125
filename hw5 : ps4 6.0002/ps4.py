@@ -196,16 +196,17 @@ class Patient(object):
 
         # calculate the current population density
         pop_density = len(surv_bacteria) / self.max_pop
-        offspring_bacteria = []
         
         # create new offspring bacteria cells
+        offspring_bacteria = []
         for bacterium in surv_bacteria:
             try:
                 offspring = bacterium.reproduce(pop_density)
                 offspring_bacteria.append(offspring)
             except Exception:
                 continue
-                                
+
+        # reassigning bacteria list with survived and offspring bacteria 
         self.bacteria = surv_bacteria + offspring_bacteria 
          
 
@@ -285,10 +286,6 @@ def simulation_without_antibiotic(num_bacteria,
     for i in range(timesteps):
         x_coords.append(i)
         y_coords.append(calc_pop_avg(populations, i))
-        
-    # print(y_coords)
-    # print()
-    # print(x_coords)
 
     make_one_curve_plot(x_coords, y_coords, 'Timesteps', 'Average Population', 'Without Antibiotic')
     return populations  
@@ -448,8 +445,6 @@ class ResistantBacteria(SimpleBacteria):
         """
         repr_prob = self.birth_prob * (1 - pop_density)
         some_prob = random.random()
-        
-
 
         if some_prob < repr_prob: 
             if self.resistant: 
@@ -458,9 +453,9 @@ class ResistantBacteria(SimpleBacteria):
                                          self.resistant, 
                                          self.mut_prob)
             else:
-                rest_prob = self.mut_prob * (1-pop_density)
+                resist_prob = self.mut_prob * (1-pop_density)
                 resistance = False
-                if some_prob < rest_prob: resistance = True
+                if some_prob < resist_prob: resistance = True
                 return ResistantBacteria(self.birth_prob, 
                                          self.death_prob, 
                                          resistance, 
@@ -510,8 +505,11 @@ class TreatedPatient(Patient):
         Returns:
             int: the number of bacteria with antibiotic resistance
         """
+        num_resist = 0
         for bacterium in self.bacteria:
-            
+            if bacterium.get_resistant(): num_resist += 1
+        return num_resist
+
             
 
     def update(self):
@@ -539,7 +537,35 @@ class TreatedPatient(Patient):
         Returns:
             int: The total bacteria population at the end of the update
         """
-        pass  # TODO
+        # determine whether each bacteria cell dies
+        surv_bacteria = []
+        for bacterium in self.bacteria:
+            if not bacterium.is_killed():
+                surv_bacteria.append(bacterium)
+
+        # if the patient is on antibiotics, keep bacteria only with resistance 
+        surv_resist_bacteria = []
+        if self.on_antibiotic:
+            for bacterium in surv_bacteria:
+                if bacterium.get_resistant():
+                    surv_resist_bacteria.append(bacterium)
+            surv_bacteria = surv_resist_bacteria
+        
+        # calculate the current population density
+        pop_density = len(surv_bacteria) / self.max_pop
+
+        # create new offspring bacteria cells
+        offspring_bacteria = []
+        for bacterium in surv_bacteria:
+            try:
+                offspring = bacterium.reproduce(pop_density)
+                offspring_bacteria.append(offspring)
+            except Exception:
+                continue
+
+        # reassigning bacteria list with survived and offspring bacteria                 
+        self.bacteria = surv_bacteria + offspring_bacteria 
+        
 
 
 ##########################
