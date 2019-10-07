@@ -1,7 +1,7 @@
 # Problem Set 4: Simulating the Spread of Disease and Bacteria Population Dynamics
 # Name: Akhmadjon Kurbanov
 # Collaborators (Discussion):
-# Time: 
+# Time: 5 hours
 
 import math
 import numpy as np
@@ -300,7 +300,7 @@ def simulation_without_antibiotic(num_bacteria,
     return populations  
 
 
-# populations = simulation_without_antibiotic(100, 1000, 0.1, 0.025, 50)
+populations = simulation_without_antibiotic(100, 1000, 0.1, 0.025, 50)
 
 ##########################
 # PROBLEM 3
@@ -366,9 +366,9 @@ def calc_95_ci(populations, t):
     SEM = std / math.sqrt(n)                # calculating standard error of the mean 
 
     mean = calc_pop_avg(populations, t)     # calculating mean 
-    ci = 1.96*SEM                           # calculating confidence interval
+    width = round(1.96*SEM, 2)              # calculating width
 
-    return (mean, ci)   
+    return (mean, width)   
 
 
 ##########################
@@ -613,7 +613,7 @@ def simulation_with_antibiotic(num_bacteria,
             trial i at time step j
     """
     total_pop = []
-    resist_pop = []
+    resistant_pop = []
     timesteps_without_antibio = 150
     timesteps_with_antibio = 250
     timesteps_total = timesteps_without_antibio + timesteps_with_antibio
@@ -649,7 +649,7 @@ def simulation_with_antibiotic(num_bacteria,
         
         # recording the total abd resistance bacteria populations per trial
         total_pop.append(total_pop_per_trial)
-        resist_pop.append(resist_pop_per_trial)
+        resistant_pop.append(resist_pop_per_trial)
 
     # prepare coordinate values for the plot
     x_coords = []
@@ -664,7 +664,7 @@ def simulation_with_antibiotic(num_bacteria,
     for i in range(timesteps_total):
         x_coords.append(i)
         y_coords1.append(calc_pop_avg(total_pop, i))
-        y_coords2.append(calc_pop_avg(resist_pop, i))
+        y_coords2.append(calc_pop_avg(resistant_pop, i))
 
     make_two_curve_plot(x_coords, 
                         y_coords1, 
@@ -675,7 +675,7 @@ def simulation_with_antibiotic(num_bacteria,
                         y_lebel, 
                         title)
 
-    return (total_pop, resist_pop)
+    return (total_pop, resistant_pop)
 
 total_pop, resistant_pop = simulation_with_antibiotic(num_bacteria=100,
                                                       max_pop=1000,
@@ -685,10 +685,24 @@ total_pop, resistant_pop = simulation_with_antibiotic(num_bacteria=100,
                                                       mut_prob=0.8,
                                                       num_trials=50)
 
+
+print('CI for populations without anitbiotic:', calc_95_ci(populations, 299))
+print()
+
+print('Simulation A:')
+print('CI for total population with antibiotic', calc_95_ci(total_pop, 299))
+print('CI for resitant population with antibiotic', calc_95_ci(resistant_pop, 299))
+print()
+
 total_pop, resistant_pop = simulation_with_antibiotic(num_bacteria=100,
                                                       max_pop=1000,
                                                       birth_prob=0.17,
                                                       death_prob=0.2,
                                                       resistant=False,
                                                       mut_prob=0.8,
-                                                      num_trials=50)
+                                                      num_trials=50)                                                   
+                                                      
+
+print('Simulation B:')
+print('CI for total population with antibiotic', calc_95_ci(total_pop, 299))
+print('CI for resistant population with antibiotic', calc_95_ci(resistant_pop, 299))
