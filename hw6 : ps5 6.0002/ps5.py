@@ -180,10 +180,10 @@ def r_squared(y, estimated):
     Returns:
         a float for the R-squared error term
     """
-    MEAN = np.sum(y)/len(y)
-    error = np.sum((y - estimated)**2)
-    meanError = np.sum((y - MEAN)**2)
-    r = 1 - error/meanError
+    mean = sum(y)/len(y)
+    error = sum((y - estimated)**2)
+    mean_error = sum((y - mean)**2)
+    r = 1 - error/mean_error
     return r
 
 def evaluate_models_on_training(x, y, models):
@@ -216,16 +216,16 @@ def evaluate_models_on_training(x, y, models):
     pylab.plot(x, y, 'bo', label = 'Measured points')
 
     for model in models: 
-        estYVals = pylab.polyval(model, x)
-        r = round(r_squared(y, estYVals), 4)
+        est_y = pylab.polyval(model, x)
+        r = round(r_squared(y, est_y), 4)
         degree = model.size-1
 
         label = 'Fit of degree {}, R2 = {}'.format(degree, r)
         if degree == 1:
-            se = round(se_over_slope(x, y, estYVals, model), 4)
+            se = round(se_over_slope(x, y, est_y, model), 4)
             label = 'Fit of degree {}, R2 = {}, SE = {}'.format(degree, r, se)
         
-        pylab.plot(x, estYVals, 'r', label = label)
+        pylab.plot(x, est_y, 'r', label = label)
         
         plt.title('The data along with the best fit curve')
         plt.xlabel('Years')
@@ -250,19 +250,19 @@ def gen_cities_avg(climate, multi_cities, years):
         cities for a given year.
     """
 
-    tempOfYears = []
+    temp_years = []
     
     for year in years: 
-        tempOfCities = []          
+        temp_cities = []          
         
         for city in multi_cities:  
-            tempPerCity = climate.get_yearly_temp(city, year)
-            tempOfCities.append(tempPerCity.sum()/tempPerCity.size)
+            temp_city = climate.get_yearly_temp(city, year)
+            temp_cities.append(temp_city.sum()/temp_city.size)
         
-        tempOfCities = pylab.array(tempOfCities)
-        tempOfYears.append(tempOfCities.sum()/tempOfCities.size)    
+        temp_cities = pylab.array(temp_cities)
+        temp_years.append(temp_cities.sum()/temp_cities.size)    
     
-    return pylab.array(tempOfYears)
+    return pylab.array(temp_years)
 
 def moving_average(y, window_length):
     """
@@ -278,8 +278,15 @@ def moving_average(y, window_length):
         an 1-d pylab array with the same length as y storing moving average of
         y-coordinates of the N sample points
     """
-    # TODO
-    pass
+    moving_avg = []
+
+    for i in range(len(y)):
+        if i-window_length < 0: 
+            moving_avg.append(sum(y[0:i+1])/(i+1))
+        else:
+            moving_avg.append(sum(y[(i-window_length+1):(i+1)])/window_length)
+            
+    return pylab.array(moving_avg)
 
 def rmse(y, estimated):
     """
@@ -377,7 +384,9 @@ if __name__ == '__main__':
     evaluate_models_on_training(x, y, models)
 
     # Part C
-    # TODO: replace this line with your code
+    y_moving_avg = moving_average(y, 5)
+    models = generate_models(x, y_moving_avg, degs)
+    evaluate_models_on_training(x, y_moving_avg, models)
 
     # Part D.2
     # TODO: replace this line with your code
