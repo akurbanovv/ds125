@@ -72,7 +72,7 @@ class TestPS5(unittest.TestCase):
 		self.assertIsInstance(r_sq, float, "r_squared should return a float")
 		self.assertEquals(r_sq, 1.0)
 
-"""
+
 	def test_gen_cities_avg(self):
 		# test for just one city
 		climate = ps5.Climate('data.csv')
@@ -104,6 +104,7 @@ class TestPS5(unittest.TestCase):
 			good_enough = math.isclose(correct[index], result[index])
 			self.assertTrue(good_enough, "City averages do not match expected results")
 
+"""
 	def test_moving_avg(self):
 		y = [1, 2, 3, 4, 5, 6, 7]
 		window_length = 3

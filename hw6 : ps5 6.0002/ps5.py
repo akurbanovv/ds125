@@ -186,7 +186,6 @@ def r_squared(y, estimated):
     r = 1 - error/meanError
     return r
 
-
 def evaluate_models_on_training(x, y, models):
     """
     For each regression model, compute the R-squared value for this model with the
@@ -223,7 +222,7 @@ def evaluate_models_on_training(x, y, models):
 
         label = 'Fit of degree {}, R2 = {}'.format(degree, r)
         if degree == 1:
-            se = round(se_over_slope(x, y, estYVals, model),4)
+            se = round(se_over_slope(x, y, estYVals, model), 4)
             label = 'Fit of degree {}, R2 = {}, SE = {}'.format(degree, r, se)
         
         pylab.plot(x, estYVals, 'r', label = label)
@@ -235,22 +234,6 @@ def evaluate_models_on_training(x, y, models):
     pylab.legend(loc = 'best')    
     plt.show()        
     
-
-# x = pylab.array(range(50))
-# # y = pylab.array(range(50))
-# # degrees = [1]
-# # models = generate_models(x, y, degrees)
-# # evaluate_models_on_training(x, y, models)
-
-# y = pylab.array(range(0,100,2))
-# # degrees = [1, 2]
-# # models = generate_models(x, y, degrees)
-# # evaluate_models_on_training(x, y, models)
-
-# degrees = [1,2,20]
-# models = generate_models(x, y, degrees)
-# evaluate_models_on_training(x, y, models)
-
 def gen_cities_avg(climate, multi_cities, years):
     """
     Compute the average annual temperature over multiple cities.
@@ -266,8 +249,20 @@ def gen_cities_avg(climate, multi_cities, years):
         this array corresponds to the average annual temperature over the given
         cities for a given year.
     """
-    # TODO
-    pass
+
+    tempOfYears = []
+    
+    for year in years: 
+        tempOfCities = []          
+        
+        for city in multi_cities:  
+            tempPerCity = climate.get_yearly_temp(city, year)
+            tempOfCities.append(tempPerCity.sum()/tempPerCity.size)
+        
+        tempOfCities = pylab.array(tempOfCities)
+        tempOfYears.append(tempOfCities.sum()/tempOfCities.size)    
+    
+    return pylab.array(tempOfYears)
 
 def moving_average(y, window_length):
     """
@@ -348,12 +343,10 @@ def evaluate_models_on_testing(x, y, models):
     pass
 
 if __name__ == '__main__':
-
-    # print(generate_models(pylab.array([1961, 1962, 1963]), pylab.array([-4.4, -5.5, -6.6]), [1, 2]))
     data = Climate('data.csv')  
     
-    # Part A.4
-    # 4.I
+    # Part A
+    # A4.I
     x = [] # years
     y = [] # temperatures
     
@@ -367,20 +360,21 @@ if __name__ == '__main__':
     models = generate_models(x, y, degs)
     evaluate_models_on_training(x, y, models)
 
-    # 4.II
+    # A4.II
     y = [] # temperatures
 
     for year in TRAINING_INTERVAL:
-        tempsYear = data.get_yearly_temp('NEW YORK', year)
-        y.append(tempsYear.sum()/tempsYear.size)        
+        tempYear = data.get_yearly_temp('NEW YORK', year)
+        y.append(tempYear.sum()/tempYear.size)        
 
     y = pylab.array(y)
     models = generate_models(x, y, degs)
     evaluate_models_on_training(x, y, models)
 
-
     # Part B
-    # TODO: replace this line with your code
+    y = gen_cities_avg(data, CITIES, TRAINING_INTERVAL)
+    models = generate_models(x, y, degs)
+    evaluate_models_on_training(x, y, models)
 
     # Part C
     # TODO: replace this line with your code
