@@ -118,7 +118,7 @@ class TestPS5(unittest.TestCase):
 		result = ps5.moving_average(y, window_length)
 		self.assertListEqual(list(result), list(correct), "Moving average values incorrect")
 
-"""
+
 	def test_rmse(self):
 		y = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 		estimate = [1, 4, 9, 16, 25, 36, 49, 64, 81]
@@ -131,6 +131,7 @@ class TestPS5(unittest.TestCase):
 		result = ps5.rmse(pylab.array(y), pylab.array(estimate))
 		correct = 40.513372278
 		self.assertTrue(math.isclose(correct, result), "RMSE value incorrect")
+
 
 	def test_gen_std_devs(self):
 		climate = ps5.Climate('data.csv')
@@ -158,7 +159,7 @@ class TestPS5(unittest.TestCase):
 		for index in range(len(correct)):
 			good_enough = math.isclose(correct[index], result[index])
 			self.assertTrue(good_enough, "Standard deviations do not match expected results")
-"""
+
 
 if __name__ == '__main__':
     # Run the tests and print verbose output to stderr.
